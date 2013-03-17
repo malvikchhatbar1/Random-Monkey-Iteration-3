@@ -2,6 +2,7 @@
 //  AppDelegate.m
 //  RMonkey
 //
+//  CPS 630 - Web Applications Project
 //  Created by Hardeep Nijher on 2013-03-03.
 //  Copyright (c) 2013 Team 13. All rights reserved.
 //
