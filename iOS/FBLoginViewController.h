@@ -2,6 +2,7 @@
 //  FBLoginViewController.h
 //  RMonkey
 //
+//  CPS 630 - Web Applications Project
 //  Created by Malvik Chhatbar on 2013-03-08.
 //  Copyright (c) 2013 Team 13. All rights reserved.
 //
