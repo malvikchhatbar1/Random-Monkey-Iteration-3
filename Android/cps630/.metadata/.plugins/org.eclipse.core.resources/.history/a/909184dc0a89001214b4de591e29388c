@@ -1,0 +1,583 @@
+package com.cps630.randommonkey;
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.text.ClipboardManager;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+//Random gen class:
+public class RandomGen extends Activity {
+	
+	//Declaring ui elements in activity random gen.xml
+	TextView tv;
+	TextView tv2;
+	ImageView monkey1;
+	ImageView monkey2;
+	ImageView banana;
+	ImageView bananas;
+	EditText et;
+	Button show;
+	Button pause;
+	Button exit;
+	Button post;
+	String pauseFlag;
+	RelativeLayout background;
+	int check = 0;
+    final ArrayList<String> facts = new ArrayList<String>();
+    
+    //Check network status:
+    private boolean isInternetOn()
+    {
+      ConnectivityManager connec = (ConnectivityManager)
+        getSystemService(Context.CONNECTIVITY_SERVICE);
+
+      // ARE WE CONNECTED TO THE NET
+      if ( connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED ||
+           connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED )
+      {
+        // MESSAGE TO SCREEN FOR TESTING (IF REQ)
+        //Toast.makeText(this, connectionType + ” connected”, Toast.LENGTH_SHORT).show();
+        return true;
+      }
+      else if ( connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
+        ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED  )
+      {
+        return false;
+      }
+      return false;
+    }
+    
+    //Load JSON task makes async call to doGetJson and passes the url
+	private class LoadJsonTask extends AsyncTask<String, Void, ArrayList<String> > {
+	       ProgressDialog dialog ;
+	       protected void onPreExecute (){
+	            dialog = ProgressDialog.show(RandomGen.this ,"Random Monkey","Getting FACTS!!!");
+	       }
+	       protected ArrayList<String> doInBackground (String... params){
+	           return doGetJson(params[0]);
+	       }
+	       protected void onPostExecute(ArrayList<String> mylist){
+	            dialog.dismiss();
+	       }
+	    }
+	
+	//doGetJson method takes input as string url and calls on Json functions,=.getJSONfromURL
+	//Adds results from getJsonfrom URL to facts arraylist and shuffles the arraylist
+	public ArrayList<String> doGetJson(String url) 
+    {
+	    //JSONArray json = JSONfunctions.getJSONfromURL("http://10.0.2.2:3000/facts.json");
+	    JSONArray json = JSONfunctions.getJSONfromURL(url);
+	    try{
+	        for(int i=0;i<json.length();i++){
+				JSONObject e = json.getJSONObject(i);
+				facts.add(e.getString("fact"));
+				Collections.shuffle(facts);
+			}		
+	    }catch(JSONException e)        {
+	    	 Log.e("log_tag", "Error parsing data "+e.toString());
+	    }
+	    
+	    //onClick listener for show button allowing for randomizing all elements of facts arraylist
+	    //Setting fonts and textview background based on global varibales font and changePic
+	    //Setting randomized fact in textview
+	    //Doing Animation on textview
+	    show.setOnClickListener(new View.OnClickListener() 
+		{
+            @Override
+            public void onClick(View v) 
+            {	
+            	String randomString;
+			    Random r = new Random();
+			    Random flip = new Random();
+			    
+			    if(Global.state == 0)
+			    {
+			    	int arraySize = facts.size();
+			    	randomString = facts.get(r.nextInt(arraySize));
+			    }
+			    else
+			    {
+			    	int k = flip.nextInt(2);
+			    	if(k == 1)
+			    	{
+			    		int arraySize = facts.size();
+			    		randomString = facts.get(r.nextInt(arraySize));
+			    	}
+			    	else
+			    	{
+			    		int arraySize = 0;
+			    		for (int l = 0; l < Global.value.length; l++)
+			    		{
+			    			if(Global.value[l] != null)
+			    			{
+			    				arraySize++;
+			    			}
+			    		}
+			    		randomString = Global.value[r.nextInt(arraySize)];
+			    	}
+			    }
+			    //Font Setting:
+			    if(Global.font.equals("ComicSans"))
+			    {
+			    	Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Comic Sans MS.ttf");
+			    	tv2.setTypeface(tf);
+			    }
+			    else if(Global.font.equals("Corsiva"))
+			    {
+			    	Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Corsiva.ttf");
+			    	tv2.setTypeface(tf);
+			    }
+			    
+			    //Setting of randomText to textview:
+			    tv2.setText(randomString);
+			    tv2.setVisibility(0);
+			    tv.setVisibility(0);
+			    monkey1.setVisibility(0);
+			    //monkey2.setVisibility(0);
+			    banana.setVisibility(0);
+			    //Textview background setting:
+			    if(Global.changePic == 2)
+			    {
+			    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.star_bubble));
+			    }
+			    else if(Global.changePic == 1)
+			    {
+			    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.cloud_bubble));
+			    }
+			    else if(Global.changePic == 3)
+			    {
+			    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.sp2));
+			    }
+			    else
+			    {
+			    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.sp2));
+			    	
+			    }
+				    
+			    background = (RelativeLayout)findViewById(R.id.background);
+			    Drawable d1 = getResources().getDrawable(R.drawable.rmbackground_480x800_nobubblehandup);
+			    
+			    //Animations:
+		        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(tv, "alpha", 0f, 1f);
+			    fadeIn.setDuration(3000);
+			    ObjectAnimator mover = ObjectAnimator.ofFloat(tv, "translationY", -375f, 0f);
+			    mover.setDuration(2000);
+				ObjectAnimator fadeOut = ObjectAnimator.ofFloat(tv, "alpha", 0f);
+			    fadeOut.setDuration(2000);
+			    
+		        ObjectAnimator fadeIn2 = ObjectAnimator.ofFloat(tv2, "alpha", 0f, 1f);
+			    fadeIn2.setDuration(3000);
+			    ObjectAnimator mover2 = ObjectAnimator.ofFloat(tv2, "translationY", -375f, 0f);
+			    mover2.setDuration(2000);
+				ObjectAnimator fadeOut2 = ObjectAnimator.ofFloat(tv2, "alpha", 0f);
+			    fadeOut2.setDuration(2000);
+			    
+			    ObjectAnimator fadeInBanana = ObjectAnimator.ofFloat(banana, "alpha", 0f, 1f);
+			    fadeInBanana.setDuration(3000);
+			    ObjectAnimator moverBanana = ObjectAnimator.ofFloat(banana, "translationY", 150f, 300f);
+			    moverBanana.setDuration(2000);
+				ObjectAnimator fadeOutBanana = ObjectAnimator.ofFloat(banana, "alpha", 0f);
+			    fadeOutBanana.setDuration(2000);
+			    
+		        ObjectAnimator fadeInBananas = ObjectAnimator.ofFloat(bananas, "alpha", 0f, 1f);
+			    fadeInBananas.setDuration(3000);
+			    ObjectAnimator moverBananas = ObjectAnimator.ofFloat(bananas, "translationY", 150f, 300f);
+			    moverBananas.setDuration(2000);
+				ObjectAnimator fadeOutBananas = ObjectAnimator.ofFloat(bananas, "alpha", 0f);
+			    fadeOutBananas.setDuration(2000);
+			    
+			    
+			    ObjectAnimator fadeInLeft = ObjectAnimator.ofFloat(monkey1, "alpha", 0f, 1f);
+			    fadeInLeft.setDuration(700);
+			    ObjectAnimator moverLeft = ObjectAnimator.ofFloat(monkey1, "translationX", 100f, 0f);
+			    moverLeft.setDuration(2000);
+				ObjectAnimator fadeOutLeft = ObjectAnimator.ofFloat(monkey1, "alpha", 0f);
+			    fadeOutLeft.setDuration(700);
+			    
+			    ObjectAnimator fadeInRight = ObjectAnimator.ofFloat(monkey2, "alpha", 0f, 1f);
+			    fadeInRight.setDuration(700);
+			    ObjectAnimator moverRight = ObjectAnimator.ofFloat(monkey2, "translationX", -100f, 0f);
+			    moverRight.setDuration(2000);
+			    ObjectAnimator fadeOutRight = ObjectAnimator.ofFloat(monkey2, "alpha", 0f, 1f);
+			    fadeOutRight.setDuration(700);
+			    
+			    
+			    
+			    AnimatorSet animatorSet = new AnimatorSet();
+			    animatorSet.play(mover).with(fadeIn);
+			    animatorSet.play(mover2).with(fadeIn2);
+			    bananas.setVisibility(4);
+			    animatorSet.play(moverBanana);
+			    background.setBackgroundDrawable(d1);
+			    animatorSet.start();
+			    
+			    if(Global.monkey_status == null || Global.monkey_status.equals("atRight"))
+			    {
+				    AnimatorSet animatorSet1 = new AnimatorSet();
+				    animatorSet1.play(moverLeft).with(fadeOutLeft).with(fadeInRight);
+				    monkey2.setVisibility(0);
+				    monkey1.setVisibility(4);
+				    //animatorSet1.play(fadeInRight);
+				    Global.monkey_status = "atLeft";
+				    animatorSet1.start();
+			    }
+			    else if(Global.monkey_status.equals("atLeft"))
+			    {
+			    	 AnimatorSet animatorSet2 = new AnimatorSet();
+			    	 animatorSet2.play(moverRight).with(fadeOutRight).with(fadeInLeft);
+			    	 monkey1.setVisibility(0);
+			    	 monkey2.setVisibility(4);
+			    	 //animatorSet2.play(fadeInLeft);
+			    	 Global.monkey_status = "atRight";
+			    	 animatorSet2.start();
+			    }
+            }
+		});
+	    
+	    //return for doGetJSON in form of arraylist facts
+	    return facts;
+    }
+	
+	//OnCreate method of the activity
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_random_gen);
+        
+        //Set initial font to corsiva if radioButtons not checked
+        if(check == 0)
+        {
+        	Global.font = "Corsiva";
+        	check = 1;
+        }
+        
+        //Setting of ui elements by their R.id within activity_random_gen.xml
+        tv = (TextView)findViewById(R.id.textView1);
+        tv2 = (TextView)findViewById(R.id.textView2);
+        show = (Button)findViewById(R.id.buttonShow);
+        pause = (Button)findViewById(R.id.buttonStop);
+        exit = (Button)findViewById(R.id.buttonExit);
+        monkey1 = (ImageView)findViewById(R.id.imageView1);
+        monkey2 = (ImageView)findViewById(R.id.imageView2);
+        banana = (ImageView)findViewById(R.id.imageView3);
+        bananas = (ImageView)findViewById(R.id.imageView4);
+        tv.setVisibility(4);
+        tv2.setVisibility(4);
+        monkey1.setVisibility(4);
+        monkey2.setVisibility(4);
+        banana.setVisibility(4);
+        bananas.setVisibility(4);
+        show.setVisibility(0);
+        pause.setVisibility(0);
+        final ClipboardManager clipBoard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+		
+        
+        pause.setTag(1);
+        pause.setText("Copy");
+        
+        if(isInternetOn())
+        {
+        	//CALL to LoadJsonTask using our own heroku web url link
+        	//new LoadJsonTask().execute("http://10.0.2.2:3000/facts.json");
+        	new LoadJsonTask().execute("http://randommonkey.herokuapp.com/facts.json");
+        }
+        else
+        {
+        	LayoutInflater inflater = getLayoutInflater();
+    		View layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout_root));
+    		ImageView image = (ImageView) layout.findViewById(R.id.image);
+    		image.setImageResource(R.drawable.ic_launcher);
+    		TextView text = (TextView) layout.findViewById(R.id.text);
+    		text.setText("Please connect your Mobile Data or Wifi");
+
+    		Toast toast = new Toast(getApplicationContext());
+    		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 250);
+    		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 250);
+    		toast.setDuration(Toast.LENGTH_LONG);
+    		toast.setView(layout);
+    		toast.show();
+    		
+        	//Toast.makeText(getApplicationContext(), "Please connect your Mobile Data or Wifi", Toast.LENGTH_LONG).show();
+        }
+        
+        //onClick listener for pause button setting pause flag to "pause"
+		pause.setOnClickListener(new View.OnClickListener() 
+		{
+            @Override
+            public void onClick(View v) 
+            {
+            	final int status =(Integer) v.getTag();
+            	if(status == 1) {
+            		LayoutInflater inflater = getLayoutInflater();
+            		View layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout_root));
+            		ImageView image = (ImageView) layout.findViewById(R.id.image);
+            		image.setImageResource(R.drawable.ic_launcher);
+            		TextView text = (TextView) layout.findViewById(R.id.text);
+            		text.setText("You have copied the random fact!");
+
+            		Toast toast = new Toast(getApplicationContext());
+            		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 250);
+            		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 250);
+            		toast.setDuration(Toast.LENGTH_LONG);
+            		toast.setView(layout);
+            		toast.show();
+            		
+            		//Toast.makeText(getApplicationContext(), "You have copied the random fact!", Toast.LENGTH_LONG).show();
+            		clipBoard.setText(tv2.getText());
+            	} else {
+            		pause.setText("Copy");
+            		pauseFlag = "pause";
+            	    v.setTag(1); //pause
+            	    show.setVisibility(0);
+            	} 
+            }
+		});
+		
+		//onClick listener for exit button
+		exit.setOnClickListener(new View.OnClickListener() 
+		{
+			public void onClick(View v) 
+	    	{
+		        finish();
+		        System.exit(0);
+	        }
+        });	
+    }
+
+    //Inflating Menu for this activity:
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		MenuInflater inf = getMenuInflater();
+		inf.inflate(R.menu.activity_random_gen, menu);
+		return true;
+		
+	}
+
+	//onClickListeners for menu items using switch/case statements:
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		// TODO Auto-generated method stub
+		switch(item.getItemId())
+		{
+			case R.id.aboutUs:
+			LayoutInflater inflater = getLayoutInflater();
+    		View layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout_root));
+    		ImageView image = (ImageView) layout.findViewById(R.id.image);
+    		image.setImageResource(R.drawable.ic_launcher);
+    		TextView text = (TextView) layout.findViewById(R.id.text);
+    		text.setText("Created By: Malvik Chhatbar, Timothy Quon, Lakshiya Rajagulasingam & Hardeep Nijher");
+
+    		Toast toast = new Toast(getApplicationContext());
+    		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 250);
+    		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 250);
+    		toast.setDuration(Toast.LENGTH_LONG);
+    		toast.setView(layout);
+    		toast.show();
+			break;
+	
+			case R.id.autoPlay:
+			LayoutInflater inflater1 = getLayoutInflater();
+    		View layout1 = inflater1.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout_root));
+    		ImageView image1 = (ImageView) layout1.findViewById(R.id.image);
+    		image1.setImageResource(R.drawable.ic_launcher);
+    		TextView text1 = (TextView) layout1.findViewById(R.id.text);
+    		text1.setText("AutoPlay will now begin! Use Pause to stop AutoPlay.");
+
+    		Toast toast1 = new Toast(getApplicationContext());
+    		toast1.setGravity(Gravity.CENTER_VERTICAL, 0, 250);
+    		toast1.setGravity(Gravity.CENTER_HORIZONTAL, 0, 250);
+    		toast1.setDuration(Toast.LENGTH_LONG);
+    		toast1.setView(layout1);
+    		toast1.show();
+    		
+			pause.setTag(0);
+			pause.setText("Pause");
+        	pauseFlag="play";
+		    show.setVisibility(4);
+		    tv.setVisibility(0);
+		    
+		    //Running a separate thread to run the getting of facts in a 4 second loop
+		    //Doing font setting and textview background setting along with animations
+		    new Thread(new Runnable(){
+		        public void run() 
+		        {
+			        // TODO Auto-generated method stub
+					Random r = new Random();
+				    int arraySize = facts.size();
+			        while(pauseFlag.equals("play"))
+			        {
+			        	try 
+			        	{
+			        		final String randomString = facts.get(r.nextInt(arraySize));
+							runOnUiThread(new Runnable() 
+							{
+							    public void run() 
+							    {
+								    if(Global.changePic == 2)
+								    {
+								    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.star_bubble));
+								    }
+								    else if(Global.changePic == 1)
+								    {
+								    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.cloud_bubble));
+								    }
+								    else if(Global.changePic == 3)
+								    {
+								    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.sp2));
+								    }
+								    else
+								    {
+								    	tv.setBackgroundDrawable(getResources().getDrawable(R.drawable.sp2));
+								    	
+								    }
+								    if(Global.font.equals("ComicSans"))
+								    {
+								    	Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Comic Sans MS.ttf");
+								    	tv2.setTypeface(tf);
+								    }
+								    else if(Global.font.equals("Corsiva"))
+								    {
+								    	Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Corsiva.ttf");
+								    	tv2.setTypeface(tf);
+								    }
+						
+								    tv2.setText(randomString);
+								    
+								    background = (RelativeLayout)findViewById(R.id.background);
+								    Drawable d1 = getResources().getDrawable(R.drawable.rmbackground_480x800_nobubblehandup);
+
+								    bananas.setVisibility(0);
+								    
+								    //Animations:
+							        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(tv, "alpha", 0f, 1f);
+								    fadeIn.setDuration(3000);
+								    ObjectAnimator mover = ObjectAnimator.ofFloat(tv, "translationY", -375f, 0f);
+								    mover.setDuration(2000);
+									ObjectAnimator fadeOut = ObjectAnimator.ofFloat(tv, "alpha", 0f);
+								    fadeOut.setDuration(2000);
+								    
+							        ObjectAnimator fadeIn2 = ObjectAnimator.ofFloat(tv2, "alpha", 0f, 1f);
+								    fadeIn2.setDuration(3000);
+								    ObjectAnimator mover2 = ObjectAnimator.ofFloat(tv2, "translationY", -375f, 0f);
+								    mover2.setDuration(2000);
+									ObjectAnimator fadeOut2 = ObjectAnimator.ofFloat(tv2, "alpha", 0f);
+								    fadeOut2.setDuration(2000);
+								    
+								    ObjectAnimator fadeInBanana = ObjectAnimator.ofFloat(banana, "alpha", 0f, 1f);
+								    fadeInBanana.setDuration(3000);
+								    ObjectAnimator moverBanana = ObjectAnimator.ofFloat(banana, "translationY", 150f, 300f);
+								    moverBanana.setDuration(2000);
+									ObjectAnimator fadeOutBanana = ObjectAnimator.ofFloat(banana, "alpha", 0f);
+								    fadeOutBanana.setDuration(2000);
+								    
+							        ObjectAnimator fadeInBananas = ObjectAnimator.ofFloat(bananas, "alpha", 0f, 1f);
+								    fadeInBananas.setDuration(3000);
+								    ObjectAnimator moverBananas = ObjectAnimator.ofFloat(bananas, "translationY", 150f, 300f);
+								    moverBananas.setDuration(2000);
+									ObjectAnimator fadeOutBananas = ObjectAnimator.ofFloat(bananas, "alpha", 0f);
+								    fadeOutBananas.setDuration(2000);
+								    
+								    ObjectAnimator fadeInLeft = ObjectAnimator.ofFloat(monkey1, "alpha", 0f, 1f);
+								    fadeInLeft.setDuration(700);
+								    ObjectAnimator moverLeft = ObjectAnimator.ofFloat(monkey1, "translationX", 100f, 0f);
+								    moverLeft.setDuration(2000);
+									ObjectAnimator fadeOutLeft = ObjectAnimator.ofFloat(monkey1, "alpha", 0f);
+								    fadeOutLeft.setDuration(700);
+								    
+								    ObjectAnimator fadeInRight = ObjectAnimator.ofFloat(monkey2, "alpha", 0f, 1f);
+								    fadeInRight.setDuration(700);
+								    ObjectAnimator moverRight = ObjectAnimator.ofFloat(monkey2, "translationX", -100f, 0f);
+								    moverRight.setDuration(2000);
+								    ObjectAnimator fadeOutRight = ObjectAnimator.ofFloat(monkey2, "alpha", 0f, 1f);
+								    fadeOutRight.setDuration(700);
+								    
+								    
+								    
+								    AnimatorSet animatorSet = new AnimatorSet();
+								    animatorSet.play(mover).with(fadeIn);
+								    animatorSet.play(mover2).with(fadeIn2);
+								    banana.setVisibility(4);
+								    animatorSet.play(moverBananas);
+								    background.setBackgroundDrawable(d1);
+								    animatorSet.start();
+								    
+								    if(Global.monkey_status == null || Global.monkey_status.equals("atRight"))
+								    {
+									    AnimatorSet animatorSet1 = new AnimatorSet();
+									    animatorSet1.play(moverLeft).with(fadeOutLeft).with(fadeInRight);
+									    monkey2.setVisibility(0);
+									    monkey1.setVisibility(4);
+									    //animatorSet1.play(fadeInRight);
+									    Global.monkey_status = "atLeft";
+									    animatorSet1.start();
+								    }
+								    else if(Global.monkey_status.equals("atLeft"))
+								    {
+								    	 AnimatorSet animatorSet2 = new AnimatorSet();
+								    	 animatorSet2.play(moverRight).with(fadeOutRight).with(fadeInLeft);
+								    	 monkey1.setVisibility(0);
+								    	 monkey2.setVisibility(4);
+								    	 //animatorSet2.play(fadeInLeft);
+								    	 Global.monkey_status = "atRight";
+								    	 animatorSet2.start();
+								    }
+							    }
+							});
+						    Thread.sleep(4000);    
+			        	} 
+			        	catch (InterruptedException e) 
+			        	{
+			        		// TODO Auto-generated catch block
+						    e.printStackTrace();
+			        	} 
+		        	}
+                }
+		    }).start();
+			break;
+	
+			case R.id.preferences:
+				Intent intent = new Intent(RandomGen.this, MenuPrefs.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                //finish();
+			break;
+		}
+		return false;	
+	}
+}

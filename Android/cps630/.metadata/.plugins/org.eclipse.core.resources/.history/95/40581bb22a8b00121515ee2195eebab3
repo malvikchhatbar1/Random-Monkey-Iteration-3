@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sand_backgound_480x800" >
+
+    <RadioGroup
+        android1:id="@+id/radioGroup1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_below="@+id/textViewImage"
+        android1:layout_centerHorizontal="true" >
+    </RadioGroup>
+
+    <RadioButton
+        android1:id="@+id/radioClouds"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignRight="@+id/radioComicSans"
+        android1:layout_below="@+id/radioGroup1"
+        android1:text="Cloud Bubble"
+        android1:textColor="#000000"
+        android1:textSize="15sp"
+        android1:textStyle="bold" />
+
+    <RadioButton
+        android1:id="@+id/radioShock"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/buttonStop"
+        android1:layout_below="@+id/radioGroup1"
+        android1:text="Star Bubble"
+        android1:textColor="#000000"
+        android1:textSize="15sp"
+        android1:textStyle="bold" />
+
+    <RadioButton
+        android1:id="@+id/radioDefault"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_below="@+id/radioClouds"
+        android1:layout_centerHorizontal="true"
+        android1:text="Default"
+        android1:textColor="#000000"
+        android1:textSize="15sp"
+        android1:textStyle="bold" />
+
+    <Button
+        android1:id="@+id/buttonPostFact"
+        android1:layout_width="100dp"
+        android1:layout_height="50dp"
+        android1:layout_below="@+id/textViewFBLogin"
+        android1:layout_marginTop="22dp"
+        android1:layout_toLeftOf="@+id/buttonFBShare"
+        android1:background="@drawable/customborder"
+        android1:text="Post Fact" />
+
+    <Button
+        android1:id="@+id/buttonFBShare"
+        android1:layout_width="100dp"
+        android1:layout_height="50dp"
+        android1:layout_above="@+id/textViewText"
+        android1:layout_centerHorizontal="true"
+        android1:background="@drawable/customborder"
+        android1:text="FB Share" />
+
+    <Button
+        android1:id="@+id/tweet_button"
+        android1:layout_width="100dp"
+        android1:layout_height="50dp"
+        android1:layout_alignBaseline="@+id/buttonFBShare"
+        android1:layout_alignBottom="@+id/buttonFBShare"
+        android1:layout_toRightOf="@+id/buttonFBShare"
+        android1:background="@drawable/customborder"
+        android1:onClick="buttonTweet"
+        android1:text="Tweet" />
+
+    <Button
+        android1:id="@+id/buttonApplyTheme"
+        android1:layout_width="125dp"
+        android1:layout_height="50dp"
+        android1:layout_below="@+id/radioDefault"
+        android1:layout_toRightOf="@+id/textViewText"
+        android1:background="@drawable/customborder"
+        android1:text="Apply Theme" />
+
+    <Button
+        android1:id="@+id/buttonPlay"
+        android1:layout_width="75dp"
+        android1:layout_height="50dp"
+        android1:layout_below="@+id/textViewSound"
+        android1:layout_marginTop="25dp"
+        android1:layout_toRightOf="@+id/textViewSound"
+        android1:background="@drawable/customborder"
+        android1:text="Play"
+        android1:textSize="15sp" />
+
+    <Button
+        android1:id="@+id/buttonStop"
+        android1:layout_width="75dp"
+        android1:layout_height="50dp"
+        android1:layout_above="@+id/textViewImage"
+        android1:layout_toRightOf="@+id/radioGroup1"
+        android1:background="@drawable/customborder"
+        android1:text="Stop"
+        android1:textSize="15sp" />
+
+    <RadioButton
+        android1:id="@+id/radioComicSans"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/textViewText"
+        android1:layout_below="@+id/textViewText"
+        android1:text="Comic Sans MS"
+        android1:textColor="#000000"
+        android1:textSize="15sp"
+        android1:textStyle="bold" />
+
+    <RadioButton
+        android1:id="@+id/radioCorsiva"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignBaseline="@+id/radioComicSans"
+        android1:layout_alignBottom="@+id/radioComicSans"
+        android1:layout_toRightOf="@+id/radioGroup1"
+        android1:text="Corsiva"
+        android1:textColor="#000000"
+        android1:textSize="15sp"
+        android1:textStyle="bold" />
+
+    <TextView
+        android1:id="@+id/textViewText"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/buttonPostFact"
+        android1:layout_below="@+id/buttonPostFact"
+        android1:layout_marginTop="14dp"
+        android1:text="Fact Text:"
+        android1:textColor="#000000"
+        android1:textSize="20sp"
+        android1:textStyle="bold" />
+
+    <Button
+        android1:id="@+id/buttonApplyFont"
+        android1:layout_width="125dp"
+        android1:layout_height="50dp"
+        android1:layout_alignParentBottom="true"
+        android1:layout_centerHorizontal="true"
+        android1:layout_marginBottom="14dp"
+        android1:background="@drawable/customborder"
+        android1:text="Apply Font" />
+
+    <TextView
+        android1:id="@+id/textViewSound"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/textViewFBLogin"
+        android1:layout_alignParentTop="true"
+        android1:layout_marginTop="20dp"
+        android1:text="Music: "
+        android1:textColor="#000000"
+        android1:textSize="20sp"
+        android1:textStyle="bold"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android1:id="@+id/textViewImage"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/textViewSound"
+        android1:layout_below="@+id/buttonPlay"
+        android1:layout_marginTop="10dp"
+        android1:text="Theme: "
+        android1:textColor="#000000"
+        android1:textSize="20sp"
+        android1:textStyle="bold" />
+
+    <TextView
+        android1:id="@+id/textViewFBLogin"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content"
+        android1:layout_alignLeft="@+id/buttonPostFact"
+        android1:layout_below="@+id/buttonApplyTheme"
+        android1:layout_marginTop="10dp"
+        android1:text="Social Media:"
+        android1:textColor="#000000"
+        android1:textSize="20sp"
+        android1:textStyle="bold" />
+
+</RelativeLayout>
